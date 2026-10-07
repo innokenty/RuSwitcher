@@ -7,7 +7,12 @@ on:
     # (2026-08-27 прогон не состоялся вовсе). Если основной отработал, скрипт
     # видит сегодняшний снапшот в истории и выходит без дубля.
     - cron: "45 6 * * *"   # 06:45 UTC = 09:45 МСК, резервный слот
-  workflow_dispatch: {}    # ручной запуск (для теста)
+  workflow_dispatch:       # ручной запуск
+    inputs:
+      preview:
+        description: "Предпросмотр: прислать отчёт ещё раз, снапшот в историю не писать"
+        type: boolean
+        default: false
 
 permissions:
   contents: write          # для коммита истории stats/history.jsonl
@@ -27,6 +32,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          YANDEX_METRIKA_TOKEN: ${{ secrets.YANDEX_METRIKA_TOKEN }}
+          STATS_PREVIEW: ${{ inputs.preview }}
         run: python3 scripts/stats_report.py
 
       - name: Commit history snapshot
